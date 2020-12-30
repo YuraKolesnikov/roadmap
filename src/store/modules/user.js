@@ -1,4 +1,4 @@
-import StatusModel from '@/models/StatusModel';
+import StatusModel from 'Models/StatusModel';
 
 export default {
 	namespaced: true,
