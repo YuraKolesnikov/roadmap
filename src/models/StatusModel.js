@@ -34,11 +34,11 @@ StatusModel.LIST = [
 ]
 
 StatusModel.ID_TO_DATA = {
-	[StatusModel.NEW]: StatusModel.NEW.id,
-	[StatusModel.IN_PROGRESS]: StatusModel.IN_PROGRESS.id,
-	[StatusModel.TESTING]: StatusModel.TESTING.id,
-	[StatusModel.PASSED]: StatusModel.PASSED,
-	[StatusModel.FAILED]: StatusModel.FAILED
+	[StatusModel.NEW.id]: StatusModel.NEW,
+	[StatusModel.IN_PROGRESS.id]: StatusModel.IN_PROGRESS,
+	[StatusModel.TESTING.id]: StatusModel.TESTING,
+	[StatusModel.PASSED.id]: StatusModel.PASSED,
+	[StatusModel.FAILED.id]: StatusModel.FAILED
 }
 
 export default StatusModel
