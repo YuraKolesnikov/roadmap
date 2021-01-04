@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="container">
     <!--<p>{{userRole}}</p>
     <p>Is admin? {{isAdmin}}</p>
     <p>Is mentor? {{isMentor}}</p>
@@ -27,6 +27,7 @@
                     <template v-else>{{ skill.title }}</template>
                   </li>
                 </ul>
+                <p v-if="(step.status === StatusModel.PASSED.id || step.status.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
               </div>
               <div class="card-action" v-if="openTab === step.id">
                 <button class="btn" @click="startStep(plan.id, step.id)" v-if="step.status === StatusModel.NEW.id">Start</button>

@@ -11,6 +11,11 @@ export default {
 		SET_LOGGED_IN_STATUS: (state, newStatus) => state.isLoggedIn = newStatus,
 		SET_USER_STATUS: (state, status) => state.userStatus = status
 	},
+	getters: {
+		isAdmin: state => state.userStatus === UserModel.ADMIN.id,
+		isUser: state => state.userStatus === UserModel.USER.id,
+		isMentor: state => state.userStatus === UserModel.MENTOR.id
+	},
 	actions: {
 		LOG_IN: ({ commit }, payload) => {
 			return new Promise(((resolve, reject) => {

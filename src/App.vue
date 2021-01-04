@@ -6,22 +6,23 @@
           <router-link class="brand-logo" to="/">Roadmap App</router-link>
           <ul class="right hide-on-med-and-down">
             <li><router-link to="/">Home</router-link></li>
-            <li><router-link to="/dashboard">Dashboard</router-link></li>
+            <li v-if="isLoggedIn && isUser"><router-link to="/dashboard">Dashboard</router-link></li>
             <li><router-link to="/sign-in">Sign in</router-link></li>
           </ul>
         </div>
       </nav>
     </div>
-    <div class="container">
-      <router-view/>
-    </div>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 
 export default {
-
+  computed: {
+    ...mapState('auth', ['isLoggedIn']),
+    ...mapGetters('auth', ['isAdmin', 'isUser', 'isMentor'])
+  }
 }
 </script>

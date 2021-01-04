@@ -14,7 +14,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -24,6 +25,9 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters('auth', ['isAdmin', 'isUser', 'isMentor'])
+  },
   methods: {
     ...mapActions('auth', ['LOG_IN']),
     handleSubmit() {
@@ -31,7 +35,9 @@ export default {
         ...this.userData
       })
       this.LOG_IN(this.userData)
-      .then(() => this.$router.push({ path: '/dashboard' }))
+      .then(() => {
+        this.$router.push({ path: this.isUser ? '/dashboard' : '/admin' })
+      })
       .catch(e => console.log(e))
     }
   }

@@ -42,8 +42,16 @@ export default {
 			}
 		]
 	},
+	getters: {
+		filteredPlans: state => state.plans.map(plan => ({
+			...plan,
+			steps: plan.steps.filter(step => step.status === StatusModel.TESTING.id)
+		}))
+			.filter(plan => !!plan.steps.length)
+	},
 	mutations: {
-		SET_STEP_STATUS: (state, { planId, stepId, newStatus, startDate }) => {
+		SET_STEP_STATUS: (state, { planId, stepId, newStatus, feedback }) => {
+			console.log(feedback)
 			const foundPlan = state.plans.find(plan => plan.id === planId)
 			const foundStep = foundPlan.steps.find(step => step.id === stepId)
 			if (foundStep.status === StatusModel.NEW.id) {
@@ -53,6 +61,10 @@ export default {
 				foundStep.endDate = endDate.toLocaleDateString('ru-RU')
 			}
 			foundStep.status = newStatus
+
+			if (feedback) {
+				foundStep.feedback = feedback
+			}
 		}
 	},
 	actions: {}
