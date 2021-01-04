@@ -7,7 +7,6 @@
         </ul>
       </div>
     </div>
-    {{comments}}
     <div class="col s9">
       <div class="plans">
         <div class="plan card" v-for="plan in filteredPlans" :key="`plan_${plan.id}`">
@@ -25,7 +24,7 @@
                   <p v-if="step.startDate && step.endDate">Start date: {{ step.startDate }}. End date: {{ step.endDate }}</p>
                   <textarea v-model="comments[`plan_${plan.id}`][`step_${step.id}`]" class="materialize-textarea"></textarea>
                   <button class="btn" style="margin-right: 10px" @click="approve(plan.id, step.id)">Approve</button>
-                  <button class="btn red" @click="decline">Decline</button>
+                  <button class="btn red" @click="decline(plan.id, step.id)">Decline</button>
                 </div>
               </li>
             </ul>

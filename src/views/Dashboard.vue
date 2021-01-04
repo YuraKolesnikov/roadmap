@@ -27,11 +27,12 @@
                     <template v-else>{{ skill.title }}</template>
                   </li>
                 </ul>
-                <p v-if="(step.status === StatusModel.PASSED.id || step.status.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
+                <p v-if="(step.status === StatusModel.PASSED.id || StatusModel.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
               </div>
               <div class="card-action" v-if="openTab === step.id">
                 <button class="btn" @click="startStep(plan.id, step.id)" v-if="step.status === StatusModel.NEW.id">Start</button>
                 <button class="btn" @click="testStep(plan.id, step.id)" v-if="step.status === StatusModel.IN_PROGRESS.id">Test</button>
+                <button class="btn" @click="testStep(plan.id, step.id)" v-if="step.status === StatusModel.FAILED.id">Test again</button>
               </div>
             </li>
           </ul>
