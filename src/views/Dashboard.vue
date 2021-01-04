@@ -57,8 +57,6 @@ export default {
   methods: {
     ...mapMutations('user', ['SET_STEP_STATUS']),
     startStep(planId, stepId) {
-      let today = new Date()
-      today.setDate(today.getDate() + 10);
       this.SET_STEP_STATUS({ planId, stepId, newStatus: StatusModel.IN_PROGRESS.id })
     },
     testStep(planId, stepId) {

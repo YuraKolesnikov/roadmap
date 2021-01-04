@@ -1,16 +1,24 @@
 <template>
-  <form @submit.prevent="handleSubmit">
-    <legend>Log in</legend>
-    <fieldset>
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username" v-model="userData.username">
-    </fieldset>
-    <fieldset>
-      <label for="password">Password</label>
-      <input type="text" name="password" id="password" v-model="userData.password">
-    </fieldset>
-    <button>Sign in</button>
-  </form>
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <form @submit.prevent="handleSubmit">
+          <h4>Log in</h4>
+          <div class="row">
+            <div class="input-field">
+              <input placeholder="Username" id="username" class="validate" v-model="userData.username">
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field">
+              <input placeholder="Password" type="text" name="password" id="password" class="validate" v-model="userData.password">
+            </div>
+          </div>
+          <button class="btn">Sign in</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>

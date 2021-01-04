@@ -56,8 +56,8 @@ export default {
 			const foundStep = foundPlan.steps.find(step => step.id === stepId)
 			if (foundStep.status === StatusModel.NEW.id) {
 				const startDate = new Date()
-				const endDate = new Date(startDate.setDate(startDate.getDate() + foundStep.daysUntilDeadline))
 				foundStep.startDate = startDate.toLocaleDateString('ru-RU')
+				const endDate = new Date(startDate.setDate(startDate.getDate() + foundStep.daysUntilDeadline))
 				foundStep.endDate = endDate.toLocaleDateString('ru-RU')
 			}
 			foundStep.status = newStatus
