@@ -1,0 +1,121 @@
+{
+  "hard": [
+    {
+      "id": 1,
+      "category_id": 1,
+      "title": "HTML Basics",
+      "skills": [
+        {
+          "id": 1,
+          "title": "Знание стандартов HTML, DOCTYPE"
+        },
+        {
+          "id": 2,
+          "title": "Базовые тэги HTML (header, main, button, div)"
+        },
+        {
+          "id": 3,
+          "title": "Тэги HTML5 (aside, article, figure, section, footer, nav)"
+        },
+        {
+          "id": 4,
+          "title": "Тэги form и различные инпуты"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "category_id": 1,
+      "title": "Продвинутый HTML",
+      "skills": [
+        {
+          "id": 1,
+          "title": "Умение пользоваться aria-атрибутами"
+        },
+        {
+          "id": 2,
+          "title": "Умение использовать тэг template"
+        },
+        {
+          "id": 3,
+          "title": "Умение использовать data-атрибуты"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "category_id": 2,
+      "title": "Основы CSS",
+      "skills": [
+        {
+          "id": 1,
+          "title": "Каскадность, приоритетность, вложенность стилей",
+          "href": "https://developer.mozilla.org/ru/docs/Learn/CSS/First_steps/How_CSS_works"
+        },
+        {
+          "id": 2,
+          "title": "Основные CSS селекторы (tag, id, class, attribute)"
+        },
+        {
+          "id": 3,
+          "title": "Основные псевдоклассы (:hover, :active, :disabled, :focus) и псевдоэлементы (::before, ::after, ::placeholder)"
+        },
+        {
+          "id": 4,
+          "title": "Основые инструменты и принципы адаптивного дизайна (сетка, media queries, fluid изображения, responsive typography)"
+        },
+        {
+          "id": 5,
+          "title": "CSS Flexbox"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "category_id": 3,
+      "title": "Основы JS - синтаксис",
+      "skills": [
+        {
+          "id": 1,
+          "title": "Зарезервированные слова (let, const, function, new, class)"
+        },
+        {
+          "id": 2,
+          "title": "Математические операторы (+, -, *, /, +=, -=, *=, /=, **, %, +number)"
+        },
+        {
+          "id": 3,
+          "title": "Операторы сравнения(==, ===, <, <=, >, >=) и логические операторы(&&, ||, !)"
+        }
+      ]
+    }
+  ],
+  "soft": [
+    {
+      "id": 5,
+      "category_id": 6,
+      "title": "Стресс-менеджмент"
+    }
+  ],
+  "language": [
+    {
+      "id": 6,
+      "category_id": 7,
+      "title": "Professional English - Level 1",
+      "skills": [
+        {
+          "id": 1,
+          "title": "Ability to read code comments and documentation"
+        },
+        {
+          "id": 2,
+          "title": "Ability to discuss technical questions with colleagues"
+        },
+        {
+          "id": 3,
+          "title": "Ability to describe to the client current tasks, struggles and possible solutions"
+        }
+      ]
+    }
+  ]
+}

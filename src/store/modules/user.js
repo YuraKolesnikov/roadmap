@@ -40,7 +40,8 @@ export default {
 					}
 				]
 			}
-		]
+		],
+		skills: []
 	},
 	getters: {
 		filteredPlans: state => state.plans.map(plan => ({
@@ -50,20 +51,42 @@ export default {
 			.filter(plan => !!plan.steps.length)
 	},
 	mutations: {
-		SET_STEP_STATUS: (state, { planId, stepId, newStatus, feedback }) => {
+		SET_STEP_STATUS: (state, { stepId, newStatus, feedback, endDate }) => {
 			console.log(feedback)
 			const foundPlan = state.plans.find(plan => plan.id === planId)
 			const foundStep = foundPlan.steps.find(step => step.id === stepId)
 			if (foundStep.status === StatusModel.NEW.id) {
 				const startDate = new Date()
 				foundStep.startDate = startDate.toLocaleDateString('ru-RU')
-				const endDate = new Date(startDate.setDate(startDate.getDate() + foundStep.daysUntilDeadline))
-				foundStep.endDate = endDate.toLocaleDateString('ru-RU')
+				const deadlineDate = new Date(startDate.setDate(startDate.getDate() + foundStep.daysUntilDeadline))
+				foundStep.deadlineDate = deadlineDate.toLocaleDateString('ru-RU')
 			}
 			foundStep.status = newStatus
 
 			if (feedback) {
 				foundStep.feedback = feedback
+			}
+
+
+		},
+		ADD_SKILL: (state, newSkill) => state.skills.push(newSkill),
+		REMOVE_SKILL: (state, id) => state.skills = state.skills.filter(skill => skill.id !== id),
+		SET_SKILL_STATUS: (state, { stepId, newStatus, daysUntilDeadline, feedback, endDate }) => {
+			const foundSkill = state.skills.find(skill => skill.id === stepId)
+			if (foundSkill.status === StatusModel.NEW.id) {
+				const startDate = new Date()
+				foundSkill.startDate = startDate.toLocaleDateString('ru-RU')
+				const deadlineDate = new Date(startDate.setDate(startDate.getDate() + daysUntilDeadline))
+				foundSkill.deadlineDate = deadlineDate.toLocaleDateString('ru-RU')
+			}
+			foundSkill.status = newStatus
+
+			if (feedback) {
+				foundSkill.feedback = feedback
+			}
+
+			if (endDate) {
+				foundSkill.endDate = endDate
 			}
 		}
 	},

@@ -5,12 +5,69 @@
     <p>Is mentor? {{isMentor}}</p>
     <p>Is user? {{isUser}}</p>-->
     <p>User: {{ fullName }}</p>
-    <div class="plans">
-      <div class="plan card" v-for="plan in plans" :key="`plan_${plan.id}`">
-        <div class="card-content">
-          <h4 class="card-title">{{ plan.title }}</h4>
-          <ul>
-            <li class="card" v-for="(step, i) in plan.steps" :key="`plan_${plan.id}_step_${step.id}`">
+    <h4>Junior Frontend Developer</h4>
+    <p>Days until deadline: {{ daysUntilDeadline }}</p>
+    <div class="row">
+      <div class="col s8">
+        <div class="skills">
+          <div v-for="(step, i) in skills" :key="`skill_${step.id}`" class="skill">
+            <div class="card">
+              <div class="card-content" style="position: relative">
+                <h5 style="cursor: pointer;" class="card-title" @click.self="toggleCollapse(step.id)">
+                  Step {{ ++i }}: {{ step.title }}
+                  <span :class="getBadgeClass(step.status)" class="badge" style="position: absolute; right: 10px; top: 10px">
+                  {{ StatusModel.ID_TO_DATA[step.status].title }}
+                  </span>
+                </h5>
+
+                <p v-if="step.startDate && step.deadlineDate">Start date: {{ step.startDate }}. Deadline date: {{ step.deadlineDate }}</p>
+                <p v-if="step.status === StatusModel.PASSED.id && step.endDate">Фактическая дата окончания: {{ step.endDate }}</p>
+                <ul
+                  class="collection"
+                  v-if="openTab === step.id">
+                  <li class="collection-item" v-for="(skill, i) in step.skills" :key="i">
+                    <template v-if="skill.href">
+                      <a target="_blank" rel="noreferrer" :href="skill.href">{{ skill.title }}</a>
+                    </template>
+                    <template v-else>{{ skill.title }}</template>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-action" v-if="openTab === step.id">
+                <div class="input-field" v-if="step.status === StatusModel.NEW.id">
+                  <input placeholder="Кол-во дней на выполнение" type="text" name="daysUntilDeadline" id="daysUntilDeadline" v-model.number="daysUntilDeadline">
+                </div>
+                <button style="margin-right: 15px" class="btn blue" @click="startStep(step.id)" v-if="step.status === StatusModel.NEW.id">Start</button>
+                <button style="margin-right: 15px" class="btn green" @click="finishStep(step.id)" v-if="step.status === StatusModel.IN_PROGRESS.id">Finish</button>
+                <button class="btn red" @click="removeSkill(step.id)">Remove</button>
+              </div>
+            </div>
+            <!--<div class="card">
+              <div class="card-content">
+                <h5
+                    style="cursor: pointer"
+                    class="card-title"
+                    @click.self="toggleCollapse(step.id)">
+                  Step {{ ++i }}: {{ step.title }}
+                  <span :class="getBadgeClass(step.status)" class="badge">
+                  {{ StatusModel.ID_TO_DATA[step.status].title }}
+                </span>
+                </h5>
+                <p v-if="step.startDate && step.endDate">Start date: {{ step.startDate }}. End date: {{ step.endDate }}</p>
+                <ul class="collection" v-if="openTab === skill.id">
+                  <li class="collection-item" v-for="(skill, i) in skill.skills" :key="i">
+                    <template v-if="skill.href">
+                      <a target="_blank" rel="noreferrer" :href="skill.href">{{ skill.title }}</a>
+                    </template>
+                    <template v-else>{{ skill.title }}</template>
+                  </li>
+                </ul>
+                <p v-if="(step.status === StatusModel.PASSED.id || StatusModel.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
+              </div>
+            </div>-->
+          </div>
+          <!--<div class="plan" v-for="plan in plans" :key="`plan_${plan.id}`">
+            <div class="card" v-for="(step, i) in plan.steps" :key="`plan_${plan.id}_step_${step.id}`">
               <div class="card-content">
                 <h5
                   style="cursor: pointer"
@@ -30,12 +87,41 @@
                 <p v-if="(step.status === StatusModel.PASSED.id || StatusModel.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
               </div>
               <div class="card-action" v-if="openTab === step.id">
-                <button class="btn" @click="startStep(plan.id, step.id)" v-if="step.status === StatusModel.NEW.id">Start</button>
-                <button class="btn" @click="testStep(plan.id, step.id)" v-if="step.status === StatusModel.IN_PROGRESS.id">Test</button>
-                <button class="btn" @click="testStep(plan.id, step.id)" v-if="step.status === StatusModel.FAILED.id">Test again</button>
+                <button class="btn red" @click="startStep(plan.id, step.id)" v-if="step.status === StatusModel.NEW.id">Start</button>
+                <button class="btn green" @click="finishStep(plan.id, step.id)" v-if="step.status === StatusModel.IN_PROGRESS.id">Finish</button>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>-->
+        </div>
+      </div>
+      <div class="col s4">
+        <div class="card">
+          <div class="paginator">
+            <div
+              class="paginator__item"
+              :class="{'paginator__item--active': activeTab === 'hard'}"
+              @click="changeTab('hard')">Hard skills</div>
+            <div
+              class="paginator__item"
+              :class="{'paginator__item--active': activeTab === 'soft'}"
+              @click="changeTab('soft')">Soft skills</div>
+            <div
+              class="paginator__item"
+              :class="{'paginator__item--active': activeTab === 'language'}"
+              @click="changeTab('language')">Language</div>
+          </div>
+          <div class="skills">
+            <ul class="collection">
+              <li
+                class="collection-item"
+                :class="{'collection-item--active': activeSkills.includes(skill.id)}"
+                v-for="skill in data[activeTab]"
+                :key="`skill_${skill.id}`"
+                @click="addSkill(skill)">
+                {{ skill.title }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -46,42 +132,72 @@
 import UserModel from 'Models/UserModel';
 import { mapState, mapMutations } from 'vuex'
 import StatusModel from 'Models/StatusModel';
+import { SkillModel, SkillCategoryModel } from 'Models/SkillModel';
+import data from '@/assets/data/courses.json';
+
 export default {
   data() {
     return {
       openTab: null,
       UserModel,
-      StatusModel
+      StatusModel,
+      SkillModel,
+      SkillCategoryModel,
+      data,
+      activeTab: 'hard',
+      activeSkills: [],
+      daysUntilDeadline: null
     }
   },
   methods: {
-    ...mapMutations('user', ['SET_STEP_STATUS']),
-    startStep(planId, stepId) {
-      this.SET_STEP_STATUS({ planId, stepId, newStatus: StatusModel.IN_PROGRESS.id })
+    ...mapMutations('user', ['SET_STEP_STATUS', 'ADD_SKILL', 'REMOVE_SKILL', 'SET_SKILL_STATUS']),
+    startStep(stepId) {
+      this.SET_SKILL_STATUS({ stepId, newStatus: StatusModel.IN_PROGRESS.id, daysUntilDeadline: this.daysUntilDeadline })
+      this.daysUntilDeadline = null
     },
-    testStep(planId, stepId) {
-      this.SET_STEP_STATUS({ planId, stepId, newStatus: StatusModel.TESTING.id })
+    finishStep(stepId) {
+      this.SET_SKILL_STATUS({ stepId, newStatus: StatusModel.PASSED.id, endDate: new Date().toLocaleDateString('ru-RU') })
+      this.openTab = null
+    },
+    addSkill(skill) {
+      this.ADD_SKILL({
+        ...skill,
+        startDate: null,
+        endDate: null,
+        status: StatusModel.NEW.id,
+        feedback: ''
+      })
+      this.activeSkills.push(skill.id)
+    },
+    removeSkill(id) {
+      this.REMOVE_SKILL(id)
+      this.activeSkills = this.activeSkills.filter(s => s !== id)
     },
     toggleCollapse(id) {
-      this.openTab = id
+      if (this.openTab === id) {
+        this.openTab = null
+      } else {
+        this.openTab = id
+      }
     },
     getBadgeClass(status) {
       if (status === StatusModel.NEW.id) {
         return 'purple darken-1 white-text'
       } else if (status === StatusModel.IN_PROGRESS.id) {
         return 'yellow darken-1 white-text'
-      } else if (status === StatusModel.TESTING.id) {
-        return 'cyan darken-2 white-text'
       } else if (status === StatusModel.PASSED.id) {
         return 'green darken-2 white-text'
       } else {
         return 'red white-text'
       }
+    },
+    changeTab(tab) {
+      this.activeTab = tab;
     }
   },
   computed: {
     ...mapState('auth', ['userStatus']),
-    ...mapState('user', ['fullName', 'plans']),
+    ...mapState('user', ['fullName', 'plans', 'skills']),
     userRole() {
       return UserModel.ID_TO_DATA[this.userStatus]
     },
@@ -97,3 +213,49 @@ export default {
   }
 }
 </script>
+
+
+<style lang="scss">
+.paginator {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+.paginator__item {
+  cursor: pointer;
+  transition: all .25s ease;
+  opacity: .7;
+  font-weight: 600;
+
+  &:not(:last-child) {
+    margin-right: 16px;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: -9px;
+      height: 100%;
+      width: 1px;
+      background-color: #000;
+      z-index: 2;
+      opacity: .8;
+    }
+  }
+
+  &--active {
+    opacity: 1;
+  }
+}
+.collection-item {
+  transition: opacity .25s ease;
+}
+
+.collection-item--active {
+  user-select: none;
+  pointer-events: none;
+  opacity: .5;
+}
+</style>
