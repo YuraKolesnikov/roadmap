@@ -5,11 +5,13 @@ export default {
 	state: {
 		isLoading: false, /* Для всяких анимаций */
 		isLoggedIn: false,
-		userStatus: null
+		userStatus: null,
+		username: null
 	},
 	mutations: {
 		SET_LOGGED_IN_STATUS: (state, newStatus) => state.isLoggedIn = newStatus,
-		SET_USER_STATUS: (state, status) => state.userStatus = status
+		SET_USER_STATUS: (state, status) => state.userStatus = status,
+		SET_USERNAME: (state, username) => state.username = username
 	},
 	getters: {
 		isAdmin: state => state.userStatus === UserModel.ADMIN.id,
@@ -17,7 +19,7 @@ export default {
 		isMentor: state => state.userStatus === UserModel.MENTOR.id
 	},
 	actions: {
-		LOG_IN: ({ commit }, payload) => {
+		LOG_IN: ({ commit, state }, payload) => {
 			return new Promise(((resolve, reject) => {
 				/* TODO: Перенести проверку в компонент Auth.vue когда будет сделан бэк */
 				if (!payload.username || !payload.password) {
@@ -35,6 +37,8 @@ export default {
 					commit('SET_USER_STATUS', UserModel.USER.id)
 				}
 
+				commit('SET_USERNAME', payload.username)
+				console.log(state.username)
 				commit('SET_LOGGED_IN_STATUS', true)
 				resolve()
 			}))

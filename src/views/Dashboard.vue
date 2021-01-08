@@ -4,9 +4,8 @@
     <p>Is admin? {{isAdmin}}</p>
     <p>Is mentor? {{isMentor}}</p>
     <p>Is user? {{isUser}}</p>-->
-    <p>User: {{ fullName }}</p>
+    <p>User: {{ username }}</p>
     <h4>Junior Frontend Developer</h4>
-    <p>Days until deadline: {{ daysUntilDeadline }}</p>
     <div class="row">
       <div class="col s8">
         <div class="skills">
@@ -32,6 +31,7 @@
                     <template v-else>{{ skill.title }}</template>
                   </li>
                 </ul>
+                <p v-if="step.feedback">Feedback: {{ step.feedback }}</p>
               </div>
               <div class="card-action" v-if="openTab === step.id">
                 <div class="input-field" v-if="step.status === StatusModel.NEW.id">
@@ -42,56 +42,7 @@
                 <button class="btn red" @click="removeSkill(step.id)">Remove</button>
               </div>
             </div>
-            <!--<div class="card">
-              <div class="card-content">
-                <h5
-                    style="cursor: pointer"
-                    class="card-title"
-                    @click.self="toggleCollapse(step.id)">
-                  Step {{ ++i }}: {{ step.title }}
-                  <span :class="getBadgeClass(step.status)" class="badge">
-                  {{ StatusModel.ID_TO_DATA[step.status].title }}
-                </span>
-                </h5>
-                <p v-if="step.startDate && step.endDate">Start date: {{ step.startDate }}. End date: {{ step.endDate }}</p>
-                <ul class="collection" v-if="openTab === skill.id">
-                  <li class="collection-item" v-for="(skill, i) in skill.skills" :key="i">
-                    <template v-if="skill.href">
-                      <a target="_blank" rel="noreferrer" :href="skill.href">{{ skill.title }}</a>
-                    </template>
-                    <template v-else>{{ skill.title }}</template>
-                  </li>
-                </ul>
-                <p v-if="(step.status === StatusModel.PASSED.id || StatusModel.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
-              </div>
-            </div>-->
           </div>
-          <!--<div class="plan" v-for="plan in plans" :key="`plan_${plan.id}`">
-            <div class="card" v-for="(step, i) in plan.steps" :key="`plan_${plan.id}_step_${step.id}`">
-              <div class="card-content">
-                <h5
-                  style="cursor: pointer"
-                  class="card-title"
-                  @click.self="toggleCollapse(step.id)">
-                  Step {{ ++i }}: {{ step.title }} <span :class="getBadgeClass(step.status)" class="badge">{{ StatusModel.ID_TO_DATA[step.status].title }}</span>
-                </h5>
-                <p v-if="step.startDate && step.endDate">Start date: {{ step.startDate }}. End date: {{ step.endDate }}</p>
-                <ul class="collection" v-if="openTab === step.id">
-                  <li class="collection-item" v-for="(skill, i) in step.skills" :key="`plan_${plan.id}_step_${step.id}_skill_${i}`">
-                    <template v-if="skill.href">
-                      <a target="_blank" rel="noreferrer" :href="skill.href">{{ skill.title }}</a>
-                    </template>
-                    <template v-else>{{ skill.title }}</template>
-                  </li>
-                </ul>
-                <p v-if="(step.status === StatusModel.PASSED.id || StatusModel.FAILED.id) && step.feedback">Feedback: {{ step.feedback }}</p>
-              </div>
-              <div class="card-action" v-if="openTab === step.id">
-                <button class="btn red" @click="startStep(plan.id, step.id)" v-if="step.status === StatusModel.NEW.id">Start</button>
-                <button class="btn green" @click="finishStep(plan.id, step.id)" v-if="step.status === StatusModel.IN_PROGRESS.id">Finish</button>
-              </div>
-            </div>
-          </div>-->
         </div>
       </div>
       <div class="col s4">
@@ -114,6 +65,7 @@
             <ul class="collection">
               <li
                 class="collection-item"
+                style="cursor:pointer;"
                 :class="{'collection-item--active': activeSkills.includes(skill.id)}"
                 v-for="skill in data[activeTab]"
                 :key="`skill_${skill.id}`"
@@ -130,10 +82,11 @@
 
 <script>
 import UserModel from 'Models/UserModel';
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import StatusModel from 'Models/StatusModel';
 import { SkillModel, SkillCategoryModel } from 'Models/SkillModel';
 import data from '@/assets/data/courses.json';
+import Message from '@/helpers/MessageBroker';
 
 export default {
   data() {
@@ -145,14 +98,17 @@ export default {
       SkillCategoryModel,
       data,
       activeTab: 'hard',
-      activeSkills: [],
       daysUntilDeadline: null
     }
   },
   methods: {
-    ...mapMutations('user', ['SET_STEP_STATUS', 'ADD_SKILL', 'REMOVE_SKILL', 'SET_SKILL_STATUS']),
+    ...mapActions('user', ['ADD_SKILL', 'REMOVE_SKILL', 'SET_SKILL_STATUS']),
     startStep(stepId) {
-      this.SET_SKILL_STATUS({ stepId, newStatus: StatusModel.IN_PROGRESS.id, daysUntilDeadline: this.daysUntilDeadline })
+      this.SET_SKILL_STATUS({
+        stepId,
+        newStatus: StatusModel.IN_PROGRESS.id,
+        daysUntilDeadline: this.daysUntilDeadline
+      })
       this.daysUntilDeadline = null
     },
     finishStep(stepId) {
@@ -167,11 +123,9 @@ export default {
         status: StatusModel.NEW.id,
         feedback: ''
       })
-      this.activeSkills.push(skill.id)
     },
     removeSkill(id) {
       this.REMOVE_SKILL(id)
-      this.activeSkills = this.activeSkills.filter(s => s !== id)
     },
     toggleCollapse(id) {
       if (this.openTab === id) {
@@ -196,8 +150,8 @@ export default {
     }
   },
   computed: {
-    ...mapState('auth', ['userStatus']),
-    ...mapState('user', ['fullName', 'plans', 'skills']),
+    ...mapState('auth', ['userStatus', 'username']),
+    ...mapState('user', ['skills', 'activeSkills']),
     userRole() {
       return UserModel.ID_TO_DATA[this.userStatus]
     },

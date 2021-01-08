@@ -1,84 +1,69 @@
 import StatusModel from 'Models/StatusModel';
+import Message from '@/helpers/MessageBroker';
 
 export default {
 	namespaced: true,
 	state: {
-		fullName: 'Yura Kolesnikov',
-		plans: [
-			{
-				id: 1,
-				title: 'Junior Frontend Developer',
-				status: StatusModel.NEW.id, /* только NEW / IN_PROGRESS / PASSED, так как весь роадмап невозможно держать в статусе TESTING/FAILED, нелогично */
-				steps: [
-					{
-						id: 1,
-						title: 'HTML & CSS Basics',
-						startDate: '', /* Генерится при нажатии на кнопку Start */
-						endDate: '', /* Отсчитывается startDate + daysUntilDeadline */
-						daysUntilDeadline: 10, /* Кол-во дней, правится в админке */
-						status: StatusModel.NEW.id, /* Если NEW - то видна кнопка Start, если IN_PROGRESS/FAILED - видна кнопка Test */
-						skills: [
-							{ title: 'Basic HTML tags' },
-							{ title: 'Advanced HTML tags' },
-							{ title: 'Стандарты HTML, как браузер рендерит HTML' },
-							{ title: 'Каскадность, приоритетность, вложенность стилей', href: 'https://developer.mozilla.org/ru/docs/Learn/CSS/First_steps/How_CSS_works' }
-						],
-						feedback: '' /* Пишется ментором при аппруве блока */
-					},
-					{
-						id: 2,
-						title: 'HTML & CSS Basics',
-						startDate: '', /* Генерится при нажатии на кнопку Start */
-						endDate: '', /* Отсчитывается startDate + daysUntilDeadline */
-						daysUntilDeadline: 5, /* Кол-во дней, правится в админке */
-						status: StatusModel.NEW.id, /* Если NEW - то видна кнопка Start, если IN_PROGRESS/FAILED - видна кнопка Test */
-						skills: [
-							{ title: 'template' },
-							{ title: 'aria-attributes' }
-						],
-						feedback: '' /* Пишется ментором при аппруве блока */
-					}
-				]
-			}
-		],
-		skills: []
-	},
-	getters: {
-		filteredPlans: state => state.plans.map(plan => ({
-			...plan,
-			steps: plan.steps.filter(step => step.status === StatusModel.TESTING.id)
-		}))
-			.filter(plan => !!plan.steps.length)
+		skills: [],
+		activeSkills: []
 	},
 	mutations: {
-		SET_STEP_STATUS: (state, { stepId, newStatus, feedback, endDate }) => {
-			console.log(feedback)
-			const foundPlan = state.plans.find(plan => plan.id === planId)
-			const foundStep = foundPlan.steps.find(step => step.id === stepId)
-			if (foundStep.status === StatusModel.NEW.id) {
-				const startDate = new Date()
-				foundStep.startDate = startDate.toLocaleDateString('ru-RU')
-				const deadlineDate = new Date(startDate.setDate(startDate.getDate() + foundStep.daysUntilDeadline))
-				foundStep.deadlineDate = deadlineDate.toLocaleDateString('ru-RU')
+		ADD_ACTIVE_SKILL: (state, skill) => state.activeSkills.push(skill),
+		REMOVE_ACTIVE_SKILL: (state, skill) => state.activeSkills = state.activeSkills.filter(s => s !== skill)
+	},
+	actions: {
+		ADD_SKILL: ({ rootState, state, commit }, newSkill) => {
+			state.skills.push(newSkill)
+			const messagePayload = {
+				author: rootState.auth.username,
+				action: 'add',
+				actionDate: `${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU')}`,
+				data: {
+					skillName: newSkill.title
+				}
 			}
-			foundStep.status = newStatus
 
-			if (feedback) {
-				foundStep.feedback = feedback
-			}
-
-
+			commit('ADD_ACTIVE_SKILL', newSkill.id)
+			commit('messages/ADD_MESSAGE', Message(messagePayload), { root: true })
 		},
-		ADD_SKILL: (state, newSkill) => state.skills.push(newSkill),
-		REMOVE_SKILL: (state, id) => state.skills = state.skills.filter(skill => skill.id !== id),
-		SET_SKILL_STATUS: (state, { stepId, newStatus, daysUntilDeadline, feedback, endDate }) => {
+		REMOVE_SKILL: ({ rootState, state, commit }, id) => {
+			const foundSkill = state.skills.find(skill => skill.id === id)
+			state.skills = state.skills.filter(skill => skill.id !== id)
+
+			const messagePayload = {
+				author: rootState.auth.username,
+				action: 'remove',
+				actionDate: `${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU')}`,
+				data: {
+					skillName: foundSkill.title
+				}
+			}
+			commit('REMOVE_ACTIVE_SKILL', id)
+			commit('messages/ADD_MESSAGE', Message(messagePayload), { root: true })
+		},
+		SET_SKILL_STATUS: ({ rootState, commit, state }, { stepId, newStatus, daysUntilDeadline, feedback, endDate }) => {
+			console.log(rootState.auth.username)
+
+			const messagePayload = {
+				author: rootState.auth.username,
+				action: 'statusChange',
+				actionDate: `${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU')}`,
+				data: {}
+			}
 			const foundSkill = state.skills.find(skill => skill.id === stepId)
+
+			messagePayload.data.skillName = foundSkill.title
+			messagePayload.data.oldStatus = foundSkill.status
+			messagePayload.data.newStatus = newStatus
+
 			if (foundSkill.status === StatusModel.NEW.id) {
 				const startDate = new Date()
 				foundSkill.startDate = startDate.toLocaleDateString('ru-RU')
 				const deadlineDate = new Date(startDate.setDate(startDate.getDate() + daysUntilDeadline))
 				foundSkill.deadlineDate = deadlineDate.toLocaleDateString('ru-RU')
+
 			}
+
 			foundSkill.status = newStatus
 
 			if (feedback) {
@@ -88,7 +73,29 @@ export default {
 			if (endDate) {
 				foundSkill.endDate = endDate
 			}
+
+			if (newStatus === StatusModel.PASSED.id) {
+				commit('REMOVE_ACTIVE_SKILL', foundSkill.id)
+			}
+
+			commit('messages/ADD_MESSAGE', Message(messagePayload), { root: true })
+		},
+		LEAVE_FEEDBACK: ({ rootState, state, commit }, { stepId, feedback }) => {
+			const foundStep = state.skills.find(s => s.id === stepId)
+			foundStep.feedback = feedback
+			commit('messages/ADD_MESSAGE',
+				{
+					author: rootState.auth.username,
+					action: 'feedback',
+					actionDate: `${new Date().toLocaleDateString('ru-RU')} ${new Date().toLocaleTimeString('ru-RU')}`,
+					data: {
+						feedback
+					}
+				},
+				{
+					root: true
+				}
+			)
 		}
-	},
-	actions: {}
+	}
 }
