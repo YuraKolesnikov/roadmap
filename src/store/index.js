@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistedState from 'vuex-persistedstate'
 
+import admin from './modules/admin'
 import auth from './modules/auth'
 import messages from './modules/messages'
 import user from './modules/user'
@@ -16,6 +17,7 @@ export default new Vuex.Store({
   actions: {
   },
   modules: {
+    admin,
     auth,
     messages,
     user

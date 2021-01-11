@@ -74,6 +74,7 @@ export default {
     }
   },
   computed: {
+
     ...mapState('user', ['plans', 'skills']),
     ...mapState('messages', ['messages']),
     ...mapState('auth', ['username']),

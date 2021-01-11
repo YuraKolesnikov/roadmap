@@ -8,6 +8,7 @@
             <li v-if="username">Username: {{ username }}</li>
             <li><router-link to="/">Home</router-link></li>
             <li v-if="isLoggedIn && isUser"><router-link to="/dashboard">Dashboard</router-link></li>
+            <li v-if="isLoggedIn && isAdmin"><router-link to="/create">Create skill</router-link></li>
             <li><router-link to="/sign-in">Sign in</router-link></li>
           </ul>
         </div>
@@ -18,10 +19,12 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
 import Message from '@/helpers/MessageBroker';
+import skillList from '@/assets/data/courses.json';
 export default {
   computed: {
+    ...mapMutations('admin', ['SET_SKILLS']),
     ...mapState('auth', ['isLoggedIn', 'username']),
     ...mapGetters('auth', ['isAdmin', 'isUser', 'isMentor'])
   }
