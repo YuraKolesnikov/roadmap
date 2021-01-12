@@ -27,7 +27,9 @@ export default {
 					break
 			}
 
+			console.log(state.skillList)
 			commit('ADD_NEW_SKILL', { newSkill, category })
+			console.log(state.skillList)
 		}
 	}
 }

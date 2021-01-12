@@ -67,7 +67,7 @@
                 class="collection-item"
                 style="cursor:pointer;"
                 :class="{'collection-item--active': activeSkills.includes(skill.id)}"
-                v-for="skill in data[activeTab]"
+                v-for="skill in skillList[activeTab]"
                 :key="`skill_${skill.id}`"
                 @click="addSkill(skill)">
                 {{ skill.title }}
@@ -150,6 +150,7 @@ export default {
     }
   },
   computed: {
+    ...mapState('admin', ['skillList']),
     ...mapState('auth', ['userStatus', 'username']),
     ...mapState('user', ['skills', 'activeSkills']),
     userRole() {

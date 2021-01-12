@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    Store skills: {{ skillList }}
     <div class="card">
       <div class="card-content">
         <h4 class="form-title">Create new skill</h4>
@@ -38,7 +37,16 @@
           <div class="row">
             <h6>Criteria</h6>
             <div class="input-field" v-for="item in formData.skills">
-              <input type="text" v-model="item.title" placeholder="Criteria">
+              <div class="row">
+                <div class="col s6">
+                  <label>Title</label>
+                  <input type="text" v-model="item.title" placeholder="Criteria">
+                </div>
+                <div class="col s6">
+                  <label>Link (optional)</label>
+                  <input type="text" v-model="item.href">
+                </div>
+              </div>
             </div>
             <button class="btn btn-small blue" @mousedown="addNewCriteria">Add</button>
           </div>
@@ -85,3 +93,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.input-field {
+  position: relative;
+
+
+}
+</style>
