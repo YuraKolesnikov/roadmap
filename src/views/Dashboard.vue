@@ -5,7 +5,12 @@
     <p>Is mentor? {{isMentor}}</p>
     <p>Is user? {{isUser}}</p>-->
     <p>User: {{ username }}</p>
-    <h4>Junior Frontend Developer</h4>
+    <div class="header">
+      <h4>Junior Frontend Developer</h4>
+      <download-excel class="btn green darken-1" :data="excelData">
+        Export
+      </download-excel>
+    </div>
     <div class="row">
       <div class="col s8">
         <div class="skills">
@@ -147,7 +152,7 @@ export default {
     },
     changeTab(tab) {
       this.activeTab = tab;
-    }
+    },
   },
   computed: {
     ...mapState('admin', ['skillList']),
@@ -164,6 +169,18 @@ export default {
     },
     isUser() {
       return this.userStatus === UserModel.USER.id
+    },
+    excelData() {
+      return this.skills.map((item, i) => ({
+        '№': i++,
+        'Название': item.title,
+        'Критерии': item.skills.reduce((acc, curr, i) => {
+          return i < item.skills.length - 1 ? acc += `${curr.title || ''}\n\r` : acc += curr.title || ''
+        }, ''),
+        'Ресурсы': item.skills.reduce((acc, curr, i) => {
+          return i < item.skills.length - 1 ? acc += `${curr.href || ''}\n\r` : acc += curr.href || ''
+        }, '')
+      }))
     }
   }
 }
@@ -171,6 +188,17 @@ export default {
 
 
 <style lang="scss">
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h4 {
+    margin: 0;
+  }
+}
+
 .paginator {
   display: flex;
   align-items: center;

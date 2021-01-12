@@ -3,7 +3,6 @@
     <div class="card">
       <div class="card-content">
         <h4 class="form-title">Create new skill</h4>
-        {{ formData }}
         <form @submit.prevent="createSkill">
           <div class="row">
             <div class="input-field">
